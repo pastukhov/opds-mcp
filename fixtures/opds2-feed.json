@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "title": "Example OPDS 2.0 Catalog"
+  },
+  "links": [
+    { "rel": "self", "href": "/opds2/root.json", "type": "application/opds+json" },
+    { "rel": "search", "href": "/opds2/search.xml", "type": "application/opensearchdescription+xml" }
+  ],
+  "navigation": [
+    { "title": "Fiction", "href": "/opds2/fiction.json", "type": "application/opds+json", "rel": "subsection" }
+  ],
+  "publications": [
+    {
+      "metadata": {
+        "@type": "http://schema.org/Book",
+        "title": "Frankenstein",
+        "identifier": "urn:isbn:9780000000001",
+        "author": { "name": "Mary Shelley" },
+        "language": "en",
+        "publisher": "Lackington, Hughes, Harding, Mavor & Jones",
+        "published": "1818-01-01",
+        "modified": "2024-01-01T00:00:00Z",
+        "description": "A scientist creates a sapient creature in an unorthodox experiment."
+      },
+      "links": [
+        { "rel": "http://opds-spec.org/acquisition/open-access", "href": "/download/frankenstein.epub", "type": "application/epub+zip" }
+      ],
+      "images": [
+        { "href": "/covers/frankenstein.jpg", "type": "image/jpeg" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "@type": "http://schema.org/Book",
+    "title": "Frankenstein",
+    "identifier": "urn:isbn:9780000000001",
+    "author": [{ "name": "Mary Shelley" }],
+    "language": "en",
+    "description": "A scientist creates a sapient creature in an unorthodox experiment."
+  },
+  "links": [
+    { "rel": "http://opds-spec.org/acquisition/open-access", "href": "/download/frankenstein.epub", "type": "application/epub+zip" }
+  ],
+  "images": [
+    { "href": "/covers/frankenstein.jpg", "type": "image/jpeg" }
+  ]
+}
