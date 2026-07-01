@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="http://opds-spec.org/2010/catalog"
+      xmlns:dcterms="http://purl.org/dc/terms/">
+  <id>urn:uuid:example-root-catalog</id>
+  <title>Example OPDS Catalog</title>
+  <updated>2024-01-15T12:00:00Z</updated>
+  <link rel="self" href="/opds/root.xml" type="application/atom+xml;profile=opds-catalog"/>
+  <link rel="search" href="/opds/opensearch.xml" type="application/opensearchdescription+xml"/>
+  <link rel="next" href="/opds/root.xml?page=2" type="application/atom+xml;profile=opds-catalog"/>
+  <link rel="http://opds-spec.org/facet" href="/opds/facet/fiction" title="Fiction" type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+
+  <entry>
+    <id>urn:uuid:book-1</id>
+    <title>Moby-Dick</title>
+    <author>
+      <name>Herman Melville</name>
+      <uri>https://example.com/authors/melville</uri>
+    </author>
+    <updated>2024-01-10T09:00:00Z</updated>
+    <published>1851-10-18</published>
+    <dcterms:language>en</dcterms:language>
+    <dcterms:publisher>Harper &amp; Brothers</dcterms:publisher>
+    <summary>The story of Captain Ahab's obsessive quest to hunt the white whale.</summary>
+    <content type="text">Full description of Moby-Dick.</content>
+    <category term="fiction" label="Fiction"/>
+    <category term="classic" label="Classic Literature"/>
+    <link rel="alternate" href="/opds/entry/book-1.xml" type="application/atom+xml;type=entry;profile=opds-catalog"/>
+    <link rel="http://opds-spec.org/acquisition/open-access" href="/download/book-1.epub" type="application/epub+zip" length="512000"/>
+    <link rel="http://opds-spec.org/image" href="/covers/book-1.jpg" type="image/jpeg"/>
+    <link rel="http://opds-spec.org/image/thumbnail" href="/covers/book-1-thumb.jpg" type="image/jpeg"/>
+  </entry>
+
+  <entry>
+    <id>urn:uuid:book-2</id>
+    <title>Pride and Prejudice</title>
+    <author>
+      <name>Jane Austen</name>
+    </author>
+    <updated>2024-01-05T09:00:00Z</updated>
+    <summary>A romantic novel of manners set in Georgian England.</summary>
+    <link rel="http://opds-spec.org/acquisition" href="/download/book-2.epub" type="application/epub+zip" length="380000"/>
+  </entry>
+</feed>

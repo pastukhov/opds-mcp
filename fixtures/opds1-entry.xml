@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:dcterms="http://purl.org/dc/terms/">
+  <id>urn:uuid:book-1</id>
+  <title>Moby-Dick</title>
+  <author>
+    <name>Herman Melville</name>
+  </author>
+  <updated>2024-01-10T09:00:00Z</updated>
+  <dcterms:language>en</dcterms:language>
+  <summary>The story of Captain Ahab's obsessive quest to hunt the white whale.</summary>
+  <link rel="http://opds-spec.org/acquisition/open-access" href="/download/book-1.epub" type="application/epub+zip" length="512000"/>
+  <link rel="http://opds-spec.org/image" href="/covers/book-1.jpg" type="image/jpeg"/>
+</entry>
