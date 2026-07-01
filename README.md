@@ -1,5 +1,8 @@
 # opds-mcp
 
+[![CI](https://github.com/pastukhov/opds-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/pastukhov/opds-mcp/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pastukhov/opds-mcp/main/.github/badges/coverage.json)](https://github.com/pastukhov/opds-mcp/actions/workflows/coverage-badge.yml)
+
 An [MCP](https://modelcontextprotocol.io) server that lets an LLM browse, search and download
 books from [OPDS](https://ru.wikipedia.org/wiki/OPDS) catalogs (Open Publication Distribution
 System) — the Atom/JSON-based feed format used by digital libraries such as Project Gutenberg,
@@ -98,11 +101,18 @@ the OS temp folder.
 ## Development
 
 ```bash
-npm run dev        # run the server directly with tsx
-npm run typecheck   # tsc --noEmit
-npm test            # vitest, using fixture OPDS documents under fixtures/
-npm run build        # compile to dist/
+npm run dev            # run the server directly with tsx
+npm run typecheck      # tsc --noEmit
+npm test               # vitest, using fixture OPDS documents under fixtures/
+npm run test:coverage  # vitest with a coverage report under coverage/
+npm run build          # compile to dist/
 ```
+
+Every pull request runs `typecheck`, `build` and `test:coverage` via
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml). On every push to `main`,
+[`.github/workflows/coverage-badge.yml`](.github/workflows/coverage-badge.yml) recomputes coverage
+and commits `.github/badges/coverage.json`, which the badge at the top of this file reads via
+[shields.io's endpoint badge](https://shields.io/badges/endpoint-badge).
 
 ## Notes
 
