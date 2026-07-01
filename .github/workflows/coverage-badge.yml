@@ -1,0 +1,37 @@
+name: Coverage badge
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - ".github/badges/**"
+
+permissions:
+  contents: write
+
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run test:coverage
+      - run: node scripts/generate-coverage-badge.mjs
+
+      - name: Commit updated badge
+        run: |
+          if git diff --quiet -- .github/badges/coverage.json; then
+            echo "Coverage unchanged, nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/badges/coverage.json
+          git commit -m "chore: update coverage badge [skip ci]"
+          git push
