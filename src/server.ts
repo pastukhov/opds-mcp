@@ -14,6 +14,8 @@ export interface ServerOptions {
   downloadDir?: string;
   /** Fallback HTTP Basic Auth used when a tool call doesn't supply its own username/password. */
   defaultAuth?: AuthOptions;
+  /** Fallback catalog URL used by opds_browse/opds_search/opds_get_entry when a call omits `url`. */
+  defaultUrl?: string;
 }
 
 function defaultDownloadDir(): string {
@@ -41,11 +43,22 @@ export function createServer(options: ServerOptions = {}): McpServer {
     username: process.env.OPDS_USERNAME,
     password: process.env.OPDS_PASSWORD,
   };
+  const defaultUrl = options.defaultUrl ?? process.env.OPDS_BASE_URL;
 
   function resolveAuth(args: { username?: string; password?: string }): AuthOptions | undefined {
     const username = args.username ?? defaultAuth.username;
     const password = args.password ?? defaultAuth.password;
     return username ? { username, password } : undefined;
+  }
+
+  function resolveUrl(url: string | undefined): string {
+    const resolved = url ?? defaultUrl;
+    if (!resolved) {
+      throw new Error(
+        "No URL was provided and no default catalog URL is configured. Pass `url`, or set OPDS_BASE_URL when starting the server.",
+      );
+    }
+    return resolved;
   }
 
   const server = new McpServer({ name: "opds-mcp", version: "0.1.0" });
@@ -59,13 +72,19 @@ export function createServer(options: ServerOptions = {}): McpServer {
         "and returns its navigation links (search, next/prev, subsections) and entries (books/publications) with " +
         "their acquisition (download) and cover image links.",
       inputSchema: {
-        url: z.string().describe("Absolute URL of the OPDS catalog/feed document to fetch"),
+        url: z
+          .string()
+          .optional()
+          .describe(
+            "Absolute URL of the OPDS catalog/feed document to fetch. Optional if the server was started with a " +
+              "default catalog URL (OPDS_BASE_URL); required otherwise.",
+          ),
         ...authArgs,
       },
     },
     async ({ url, username, password }) => {
       try {
-        const { feed, finalUrl } = await fetchFeed(url, resolveAuth({ username, password }));
+        const { feed, finalUrl } = await fetchFeed(resolveUrl(url), resolveAuth({ username, password }));
         return textResult({ sourceUrl: finalUrl, ...summarizeFeed(feed) });
       } catch (err) {
         return errorResult(err);
@@ -82,13 +101,20 @@ export function createServer(options: ServerOptions = {}): McpServer {
         "discovered via the feed's rel=\"search\" link) or an OpenSearchDescription document URL directly, plus a " +
         "free-text query. Returns matching entries the same way opds_browse does.",
       inputSchema: {
-        url: z.string().describe("URL of the OPDS feed (containing a rel=\"search\" link) or of an OpenSearchDescription document"),
+        url: z
+          .string()
+          .optional()
+          .describe(
+            "URL of the OPDS feed (containing a rel=\"search\" link) or of an OpenSearchDescription document. " +
+              "Optional if the server was started with a default catalog URL (OPDS_BASE_URL); required otherwise.",
+          ),
         query: z.string().describe("Free-text search query, e.g. a book title or author name"),
         ...authArgs,
       },
     },
-    async ({ url, query, username, password }) => {
+    async ({ url: urlArg, query, username, password }) => {
       try {
+        const url = resolveUrl(urlArg);
         const auth = resolveAuth({ username, password });
         const initial = await fetchText(url, { auth });
         const isOpenSearchDoc = initial.body.includes("OpenSearchDescription");
@@ -128,13 +154,19 @@ export function createServer(options: ServerOptions = {}): McpServer {
         "Fetches a single OPDS entry document (a per-publication Atom entry or OPDS 2.0 publication), typically the " +
         "URL found in an entry's rel=\"alternate\" link, and returns its full details including acquisition links.",
       inputSchema: {
-        url: z.string().describe("Absolute URL of the entry/publication document to fetch"),
+        url: z
+          .string()
+          .optional()
+          .describe(
+            "Absolute URL of the entry/publication document to fetch. Optional if the server was started with a " +
+              "default catalog URL (OPDS_BASE_URL); required otherwise.",
+          ),
         ...authArgs,
       },
     },
     async ({ url, username, password }) => {
       try {
-        const { feed, finalUrl } = await fetchFeed(url, resolveAuth({ username, password }));
+        const { feed, finalUrl } = await fetchFeed(resolveUrl(url), resolveAuth({ username, password }));
         if (feed.entries.length === 0) {
           return errorResult(new Error(`No entry found at ${finalUrl}`));
         }
