@@ -147,4 +147,36 @@ describe("opds-mcp server (end-to-end over MCP)", () => {
     });
     expect(seenAuth).toBe(`Basic ${Buffer.from("callUser:callPass").toString("base64")}`);
   });
+
+  it("falls back to the server's default catalog URL when a call omits url", async () => {
+    const defaultUrlClient = await connectedClient({
+      downloadDir,
+      defaultUrl: "https://example.com/opds/root.xml",
+    });
+    const fetchMock = vi.fn(async () => xmlResponse(read("opds1-feed.xml")));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = (await defaultUrlClient.callTool({ name: "opds_browse", arguments: {} })) as CallToolResult;
+    const data = JSON.parse(textOf(result));
+    expect(data.title).toBe("Example OPDS Catalog");
+    expect(String(fetchMock.mock.calls[0]![0])).toBe("https://example.com/opds/root.xml");
+  });
+
+  it("prefers a per-call url over the server's default catalog URL", async () => {
+    const defaultUrlClient = await connectedClient({
+      downloadDir,
+      defaultUrl: "https://example.com/opds/default.xml",
+    });
+    const fetchMock = vi.fn(async () => xmlResponse(read("opds1-feed.xml")));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await defaultUrlClient.callTool({ name: "opds_browse", arguments: { url: "https://example.com/opds/other.xml" } });
+    expect(String(fetchMock.mock.calls[0]![0])).toBe("https://example.com/opds/other.xml");
+  });
+
+  it("returns a clear error when url is omitted and no default catalog URL is configured", async () => {
+    const result = (await client.callTool({ name: "opds_browse", arguments: {} })) as CallToolResult;
+    expect(result.isError).toBe(true);
+    expect(textOf(result)).toMatch(/OPDS_BASE_URL/);
+  });
 });

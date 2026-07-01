@@ -25,7 +25,10 @@ search, and downloading acquisition links to disk.
 - **`opds_download`** — download the file behind an acquisition link to a local directory and
   return the saved file path.
 
-All tools accept optional `username`/`password` for catalogs that require HTTP Basic Auth.
+All tools accept optional `username`/`password` for catalogs that require HTTP Basic Auth. The
+`url` argument of `opds_browse`/`opds_search`/`opds_get_entry` is optional if the server is
+configured with a default catalog via `OPDS_BASE_URL` (see below) — pass `url` explicitly to
+browse a different catalog for that one call.
 
 ## Install
 
@@ -49,6 +52,7 @@ script to build `dist/`), then executes the `opds-mcp` bin:
       "command": "npx",
       "args": ["-y", "github:pastukhov/opds-mcp"],
       "env": {
+        "OPDS_BASE_URL": "https://example.com/opds/root.xml",
         "OPDS_USERNAME": "optional-default-username",
         "OPDS_PASSWORD": "optional-default-password",
         "OPDS_DOWNLOAD_DIR": "/absolute/path/to/save/books"
@@ -71,6 +75,7 @@ Example for Claude Desktop / Claude Code (`claude_desktop_config.json` or `.mcp.
       "command": "npx",
       "args": ["-y", "/absolute/path/to/opds-mcp"],
       "env": {
+        "OPDS_BASE_URL": "https://example.com/opds/root.xml",
         "OPDS_USERNAME": "optional-default-username",
         "OPDS_PASSWORD": "optional-default-password",
         "OPDS_DOWNLOAD_DIR": "/absolute/path/to/save/books"
@@ -84,10 +89,15 @@ Example for Claude Desktop / Claude Code (`claude_desktop_config.json` or `.mcp.
 above. Alternatively, run `npm install && npm run build` yourself and point `command`/`args`
 directly at `node` and `dist/index.js`.
 
-`OPDS_USERNAME`/`OPDS_PASSWORD` are used as a fallback whenever a tool call doesn't pass its own
-credentials, which is convenient when the server is dedicated to a single authenticated catalog.
-`OPDS_DOWNLOAD_DIR` controls where `opds_download` saves files; it defaults to a directory under
-the OS temp folder.
+- **`OPDS_BASE_URL`** — the catalog `opds_browse`/`opds_search`/`opds_get_entry` use when a tool
+  call doesn't pass its own `url`. This is the recommended way to point the server at a specific
+  library (e.g. `https://your-library.example/opds`) without relying on the model to know or
+  guess the address; omit it to require an explicit `url` on every call instead.
+- **`OPDS_USERNAME`/`OPDS_PASSWORD`** — used as a fallback whenever a tool call doesn't pass its
+  own credentials, which is convenient when the server is dedicated to a single authenticated
+  catalog.
+- **`OPDS_DOWNLOAD_DIR`** — where `opds_download` saves files; defaults to a directory under the
+  OS temp folder.
 
 ## Example flow
 
