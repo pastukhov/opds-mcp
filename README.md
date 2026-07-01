@@ -33,14 +33,18 @@ npm run build
 
 ## Configure in an MCP client
 
-Example for Claude Desktop / Claude Code (`claude_desktop_config.json` or `.mcp.json`):
+### Via npx (no local checkout required)
+
+The package hasn't been published to the npm registry, but `npx` can install and run it straight
+from this GitHub repo — it clones the repo, runs `npm install` (which triggers the `prepare`
+script to build `dist/`), then executes the `opds-mcp` bin:
 
 ```json
 {
   "mcpServers": {
     "opds": {
-      "command": "node",
-      "args": ["/absolute/path/to/opds-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "github:pastukhov/opds-mcp"],
       "env": {
         "OPDS_USERNAME": "optional-default-username",
         "OPDS_PASSWORD": "optional-default-password",
@@ -50,6 +54,32 @@ Example for Claude Desktop / Claude Code (`claude_desktop_config.json` or `.mcp.
   }
 }
 ```
+
+To pin a specific branch or commit, append it: `"github:pastukhov/opds-mcp#branch-or-sha"`.
+
+### Via a local checkout
+
+Example for Claude Desktop / Claude Code (`claude_desktop_config.json` or `.mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "opds": {
+      "command": "npx",
+      "args": ["-y", "/absolute/path/to/opds-mcp"],
+      "env": {
+        "OPDS_USERNAME": "optional-default-username",
+        "OPDS_PASSWORD": "optional-default-password",
+        "OPDS_DOWNLOAD_DIR": "/absolute/path/to/save/books"
+      }
+    }
+  }
+}
+```
+
+`npx -y /absolute/path` installs dependencies and builds on first run, same as the GitHub form
+above. Alternatively, run `npm install && npm run build` yourself and point `command`/`args`
+directly at `node` and `dist/index.js`.
 
 `OPDS_USERNAME`/`OPDS_PASSWORD` are used as a fallback whenever a tool call doesn't pass its own
 credentials, which is convenient when the server is dedicated to a single authenticated catalog.
